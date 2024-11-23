@@ -1,0 +1,17 @@
+# Core dependencies
+opencv-python-headless  # Optimized for Raspberry Pi
+numpy>=1.21.0
+tensorflow-lite         # TF Lite for better performance on RPi
+pillow>=9.0.0
+
+# GPIO and Hardware
+RPi.GPIO>=0.7.0
+picamera2              # For Raspberry Pi camera
+
+# Audio output
+pyttsx3               # Text-to-speech
+espeak               # Required for pyttsx3
+
+# Optional but recommended
+psutil               # For system monitoring
+pyyaml              # For config files
