@@ -49,12 +49,18 @@ This project transforms a Raspberry Pi into an intelligent room scanning device 
 - Faycal Kilali (Lead Developer)
 - Ryan Budd (Contributor)
 
+### Other citations
+Open-source ultralytics package: [YOLOv10 GitHub Repository](https://github.com/THU-MIG/yolov10)
+ 
+Wang, Ao, Chen, Hui, Liu, Lihao, Chen, Kai, Lin, Zijia, Han, Jungong, & Ding, Guiguang. (2024). *YOLOv10: Real-Time End-to-End Object Detection*. arXiv preprint arXiv:2405.14458.
 
 ## Installation
 
+Python 3.9 is required.
+
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/pi-room-scanner.git
+    git clone https://github.com/faycalki/room-scanner-rpi.git
     cd pi-room-scanner
     ```
 
@@ -73,7 +79,7 @@ This project transforms a Raspberry Pi into an intelligent room scanning device 
 
 4. Configure audio output:
     ```bash
-    # Instructions for audio setup will be here
+    # This will be based on what kind of hardware you use for the audio. Refer to the documentation of your hardware.
     ```
 
 ## Usage
@@ -86,12 +92,4 @@ This project transforms a Raspberry Pi into an intelligent room scanning device 
 4. Listen to the voice description of detected objects
 5. Red LED indicates scanning in progress
 
-### Configuration
 
-The system can be configured through the `config.yaml` file:
-```yaml
-# Example configuration
-language: "en"
-confidence_threshold: 0.5
-scan_duration: 3
-Project Structure
