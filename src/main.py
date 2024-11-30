@@ -2,12 +2,9 @@
 # Version: 0.5
 
 import requests
-import picamera # Note this requires a pi
-
 import os
 from audio import synthesize_audio
-
-
+from gpio_handler_no_debounce import GPIOHandler  # Import the GPIOHandler class
 
 def calculate_position(bbox, image_width, image_height):
     """
@@ -37,15 +34,11 @@ def calculate_position(bbox, image_width, image_height):
 
     return f"{horizontal} and {vertical}"
 
-def main(language="en"):
-    # Backend URL (modify if different)
+def process_image(filename, language):
+    """Process the image and send it to the server for detections."""
     backend_url = "http://localhost:5000"
 
-    # Path to the image file you want to process
-    filename = os.path.relpath("uploads/current.png")
-
     try:
-        # Read the image file
         with open(filename, 'rb') as file:
             image_bytes = file.read()
             files = {'file': ('current.png', image_bytes, 'image/jpeg')}
@@ -58,7 +51,6 @@ def main(language="en"):
             )
 
             if response.status_code == 200:
-                # Process detections
                 detections_data = response.json()
                 detections_hashmap = {}
 
@@ -80,11 +72,8 @@ def main(language="en"):
                 for key, positions in detections_hashmap.items():
                     count = len(positions)
                     instances = "instance" if count == 1 else "instances"
-
-                    # Construct a sentence for the current object
                     position_descriptions = ", ".join(positions)
 
-                    # Update the output string based on the count of instances
                     if count == 1:
                         output_string += f"1 {key} located {position_descriptions}. "
                     else:
@@ -102,7 +91,21 @@ def main(language="en"):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
+def main(language="en"):
+    gpio = GPIOHandler(button_pin=17)  # Initialize GPIOHandler
 
+    print("Press the button to take a picture (Ctrl+C to exit)...")
+    try:
+        while True:
+            if gpio.is_button_pressed():
+                gpio.take_picture()  # Take a picture when the button is pressed
+                process_image(os.path.join(gpio.upload_directory, 'current.png'), language)  # Process the image
+                time.sleep(1)  # Debounce delay to prevent multiple captures
+
+    except KeyboardInterrupt:
+        print("\nExiting...")
+    finally:
+        gpio.cleanup()  # Clean up GPIO and camera on exit
 
 if __name__ == "__main__":
     main()
