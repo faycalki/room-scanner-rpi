@@ -57,10 +57,47 @@ Wang, Ao, Chen, Hui, Liu, Lihao, Chen, Kai, Lin, Zijia, Han, Jungong, & Ding, Gu
 ## Installation
 Python 3.9 is required.
 
-For an automated installation script, use the following
+First, we present two installation scipts. One to setup the pyenv if you haven't, and one to setup the rest.
+
+For setting up pyenv,
 
 ```bash
-#!/bin/bash
+# Pyenv setup
+curl https://pyenv.run | bash
+
+# Update shell configuration for pyenv
+{
+    echo 'export PYENV_ROOT="$HOME/.pyenv"'
+    echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
+    echo 'eval "$(pyenv init -)"'
+} >> ~/.bashrc
+
+{
+    echo 'export PYENV_ROOT="$HOME/.pyenv"'
+    echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
+    echo 'eval "$(pyenv init -)"'
+} >> ~/.profile
+
+{
+    echo 'export PYENV_ROOT="$HOME/.pyenv"'
+    echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"'
+    echo 'eval "$(pyenv init -)"'
+} >> ~/.bash_profile
+
+# Build requirements for Python
+sudo apt-get install --yes libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libgdbm-dev lzma lzma-dev tcl-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev wget curl make build-essential openssl
+
+# Install Python with pyenv
+pyenv update
+pyenv install 3.9.0
+pyenv global 3.9.0
+````
+
+```bash
+# Load pyenv in the current shell session
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
 
 # Variables
 PROJECT_DIR="/home/pi/PycharmProjects/room_scanner"
@@ -69,11 +106,7 @@ VENV_DIR="$PROJECT_DIR/.venv"
 GIT_REPO="https://github.com/faycalki/room-scanner-rpi.git"
 START_SCRIPT="$PROJECT_DIR/start_scripts.sh"
 SERVICE_FILE="/etc/systemd/system/room_scanner.service"
-
-# Install required packages
-echo "Installing required packages..."
-sudo apt update
-sudo apt install -y python3.9 python3.9-venv python3-pip git
+TAR_FILE="$PROJECT_DIR/ultralytics.tar.gz"  # Path to the tar.gz file
 
 # Clone the repository
 if [ ! -d "$PROJECT_DIR" ]; then
@@ -85,9 +118,17 @@ else
     git pull
 fi
 
-# Create a virtual environment with Python 3.9
+# Extract the ultralytics.tar.gz file into the src directory
+if [ -f "$TAR_FILE" ]; then
+    echo "Extracting ultralytics.tar.gz to $SRC_DIR..."
+    tar -xzf "$TAR_FILE" -C "$SRC_DIR"
+else
+    echo "Warning: $TAR_FILE not found. Skipping extraction."
+fi
+
+# Create a virtual environment with the pyenv-managed Python 3.9
 echo "Creating a virtual environment with Python 3.9..."
-python3.9 -m venv $VENV_DIR
+python -m venv $VENV_DIR  # Use 'python' which is linked to pyenv's Python 3.9
 
 # Activate the virtual environment and install dependencies
 echo "Installing Python dependencies..."
@@ -96,44 +137,53 @@ pip install --upgrade pip
 pip install -r "$SRC_DIR/requirements.txt"
 
 # Create the start_scripts.sh file
-echo "#!/bin/bash" > $START_SCRIPT
-echo "" >> $START_SCRIPT
-echo "# Navigate to the directory where your Python scripts are located" >> $START_SCRIPT
-echo "cd $SRC_DIR" >> $START_SCRIPT
-echo "" >> $START_SCRIPT
-echo "# Activate the virtual environment" >> $START_SCRIPT
-echo "source $VENV_DIR/bin/activate" >> $START_SCRIPT
-echo "" >> $START_SCRIPT
-echo "# Start the Flask backend in the background" >> $START_SCRIPT
-echo "python3 app.py &" >> $START_SCRIPT
-echo "" >> $START_SCRIPT
-echo "# Wait a few seconds to ensure the Flask server is up" >> $START_SCRIPT
-echo "sleep 5" >> $START_SCRIPT
-echo "" >> $START_SCRIPT
-echo "# Run the main script" >> $START_SCRIPT
-echo "python3 main.py" >> $START_SCRIPT
+cat <<EOL > $START_SCRIPT
+#!/bin/bash
+
+# Navigate to the directory where your Python scripts are located
+cd $SRC_DIR
+
+# Activate the virtual environment
+source $VENV_DIR/bin/activate
+
+# Start the Flask backend in the background
+python app.py &
+
+# Wait a few seconds to ensure the Flask server is up
+sleep 5
+
+# Run the main script
+python main.py
+EOL
 
 # Make the script executable
 chmod +x $START_SCRIPT
 
-# Create the systemd service file
-echo "[Unit]" > $SERVICE_FILE
-echo "Description=Room Scanner Service" >> $SERVICE_FILE
-echo "After=multi-user.target" >> $SERVICE_FILE
-echo "" >> $SERVICE_FILE
-echo "[Service]" >> $SERVICE_FILE
-echo "ExecStart=$START_SCRIPT" >> $SERVICE_FILE
-echo "WorkingDirectory=$SRC_DIR" >> $SERVICE_FILE
-echo "StandardOutput=inherit" >> $SERVICE_FILE
-echo "StandardError=inherit" >> $SERVICE_FILE
-echo "Restart=always" >> $SERVICE_FILE
-echo "User=pi" >> $SERVICE_FILE
-echo "" >> $SERVICE_FILE
-echo "[Install]" >> $SERVICE_FILE
-echo "WantedBy=multi-user.target" >> $SERVICE_FILE
+# Create the systemd service file, appropriately named.
+cat <<EOL > $SERVICE_FILE
+
+[Unit]
+Description=Room Scanner Service
+After=multi-user.target
+
+[Service]
+ExecStart=$START_SCRIPT
+WorkingDirectory=$SRC_DIR
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
+EOL
+
+# Enable the systemd service
 sudo systemctl enable room_scanner.service
+
 echo "Setup complete! Reboot your Raspberry Pi to start the services on boot."
 ```
+
 
 Alternatively, if you wish to do it more manually, here are the steps
 
