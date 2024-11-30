@@ -170,4 +170,7 @@ Alternatively, if you wish to do it more manually, here are the steps
 3. Press the button to trigger a room scan (blue LED will trigger)
 4. Listen to the voice description of detected objects
 
+Note: if you followed the manual instructions, you will want to run the flask detector.py before you run the main.py file.
+
+
 
