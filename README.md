@@ -87,9 +87,8 @@ Python 3.9 is required.
 ### Basic Operation
 
 1. Power on the Raspberry Pi
-2. Wait for the green LED to indicate system ready
-3. Press the button to trigger a room scan
+2. Wait for the red LED to indicate system ready (power is on for the system)
+3. Press the button to trigger a room scan (blue LED will trigger)
 4. Listen to the voice description of detected objects
-5. Red LED indicates scanning in progress
 
 
