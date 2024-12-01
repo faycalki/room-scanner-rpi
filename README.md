@@ -113,47 +113,49 @@ echo "Python 3.9.0 installed successfully with pyenv. Please restart your termin
 ````
 
 ```bash
+#!/bin/bash
+
 # Load pyenv in the current shell session
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
 # Variables
-PROJECT_DIR="/home/pi/PycharmProjects/room_scanner"
+PROJECT_DIR="$HOME/PycharmProjects/room_scanner"  # Updated to use $HOME
 SRC_DIR="$PROJECT_DIR/src"
 VENV_DIR="$PROJECT_DIR/.venv"
 GIT_REPO="https://github.com/faycalki/room-scanner-rpi.git"
 START_SCRIPT="$PROJECT_DIR/start_scripts.sh"
 SERVICE_FILE="/etc/systemd/system/room_scanner.service"
-TAR_FILE="$PROJECT_DIR/ultralytics.tar.gz"  # Path to the tar.gz file
+TAR_FILE="$SRC_DIR/ultralytics.tar.gz"  # Path to the tar.gz file
 
 # Clone the repository
 if [ ! -d "$PROJECT_DIR" ]; then
     echo "Cloning the GitHub repository..."
-    git clone $GIT_REPO $PROJECT_DIR
+    git clone $GIT_REPO $PROJECT_DIR || { echo "Failed to clone repository"; exit 1; }
 else
     echo "Project directory already exists. Pulling latest changes..."
     cd $PROJECT_DIR
-    git pull
+    git pull || { echo "Failed to pull latest changes"; exit 1; }
 fi
 
 # Extract the ultralytics.tar.gz file into the src directory
 if [ -f "$TAR_FILE" ]; then
     echo "Extracting ultralytics.tar.gz to $SRC_DIR..."
-    tar -xzf "$TAR_FILE" -C "$SRC_DIR"
+    tar -xzf "$TAR_FILE" -C "$SRC_DIR" || { echo "Failed to extract $TAR_FILE"; exit 1; }
 else
     echo "Warning: $TAR_FILE not found. Skipping extraction."
 fi
 
 # Create a virtual environment with the pyenv-managed Python 3.9
 echo "Creating a virtual environment with Python 3.9..."
-python -m venv $VENV_DIR  # Use 'python' which is linked to pyenv's Python 3.9
+python -m venv $VENV_DIR || { echo "Failed to create virtual environment"; exit 1; }
 
 # Activate the virtual environment and install dependencies
 echo "Installing Python dependencies..."
 source $VENV_DIR/bin/activate
-pip install --upgrade pip
-pip install -r "$SRC_DIR/requirements.txt"
+pip install --upgrade pip || { echo "Failed to upgrade pip"; exit 1; }
+pip install -r "$PROJECT_DIR/requirements.txt" || { echo "Failed to install requirements"; exit 1; }
 
 # Create the start_scripts.sh file
 cat <<EOL > $START_SCRIPT
@@ -166,7 +168,7 @@ cd $SRC_DIR
 source $VENV_DIR/bin/activate
 
 # Start the Flask backend in the background
-python app.py &
+python detector.py &
 
 # Wait a few seconds to ensure the Flask server is up
 sleep 5
@@ -188,10 +190,10 @@ After=multi-user.target
 [Service]
 ExecStart=$START_SCRIPT
 WorkingDirectory=$SRC_DIR
-StandardOutput=inherit
-StandardError=inherit
+StandardOutput=journal
+StandardError=journal
 Restart=always
-User=pi
+User=$(whoami)  # Use the current user
 
 [Install]
 WantedBy=multi-user.target
@@ -201,6 +203,7 @@ EOL
 sudo systemctl enable room_scanner.service
 
 echo "Setup complete! Reboot your Raspberry Pi to start the services on boot."
+
 ```
 
 
