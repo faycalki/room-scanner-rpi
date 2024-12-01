@@ -62,35 +62,54 @@ First, we present two installation scipts. One to setup the pyenv if you haven't
 For setting up pyenv,
 
 ```bash
+#!/bin/bash
+
 # Pyenv setup
 curl https://pyenv.run | bash
 
 # Update shell configuration for pyenv
-{
-    echo 'export PYENV_ROOT="$HOME/.pyenv"'
-    echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
-    echo 'eval "$(pyenv init -)"'
-} >> ~/.bashrc
+echo 'export PYENV_ROOT="$HOME/.pyenv"; command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"; eval "$(pyenv init -)"' >> ~/.bashrc
+echo 'export PYENV_ROOT="$HOME/.pyenv"; command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"; eval "$(pyenv init -)"' >> ~/.profile
+echo 'export PYENV_ROOT="$HOME/.pyenv"; [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"; eval "$(pyenv init -)"' >> ~/.bash_profile
 
-{
-    echo 'export PYENV_ROOT="$HOME/.pyenv"'
-    echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"'
-    echo 'eval "$(pyenv init -)"'
-} >> ~/.profile
+exec $SHELL
 
-{
-    echo 'export PYENV_ROOT="$HOME/.pyenv"'
-    echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"'
-    echo 'eval "$(pyenv init -)"'
-} >> ~/.bash_profile
-
-# Build requirements for Python
-sudo apt-get install --yes libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libgdbm-dev lzma lzma-dev tcl-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev wget curl make build-essential openssl
+# Install required build dependencies for Python
+sudo apt-get update
+sudo apt-get install --yes \
+    libssl-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev \
+    llvm \
+    libncurses5-dev \
+    libncursesw5-dev \
+    xz-utils \
+    tk-dev \
+    libgdbm-dev \
+    lzma \
+    lzma-dev \
+    tcl-dev \
+    libxml2-dev \
+    libxmlsec1-dev \
+    libffi-dev \
+    liblzma-dev \
+    wget \
+    curl \
+    make \
+    build-essential \
+    openssl
 
 # Install Python with pyenv
 pyenv update
 pyenv install 3.9.0
 pyenv global 3.9.0
+
+# Inform user of successful installation
+echo "Python 3.9.0 installed successfully with pyenv. Please restart your terminal or run 'source ~/.bashrc' to apply changes."
+
+
 ````
 
 ```bash
