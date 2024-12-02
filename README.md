@@ -57,9 +57,11 @@ Wang, Ao, Chen, Hui, Liu, Lihao, Chen, Kai, Lin, Zijia, Han, Jungong, & Ding, Gu
 ## Installation
 Python 3.9 is required.
 
+If you are using a Raspberry PI, depending on the available specifications you may need to *increase your swap file* and or *limit the CPU usage when building packages*, if you need to use cmake or make.
+
 First, we present two installation scipts. One to setup the pyenv if you haven't, and one to setup the rest.
 
-For setting up pyenv,
+1. Setting up pyenv,
 
 ```bash
 #!/bin/bash
@@ -111,7 +113,7 @@ echo "Python 3.9.0 installed successfully with pyenv. Please restart your termin
 
 
 ````
-
+2. Next stage
 ```bash
 #!/bin/bash
 
@@ -205,7 +207,9 @@ sudo systemctl enable room_scanner.service
 echo "Setup complete! Reboot your Raspberry Pi to start the services on boot."
 
 ```
+3. Finalization: Now, you'll wanna download ultralytics from https://github.com/THU-MIG/yolov10/tree/main/ultralytics and extract that inside your src folder.
 
+4. Set up your camera and configure the audio output (this step depends on what hardware and software you use, refer to its documentation)
 
 Alternatively, if you wish to do it more manually, here are the steps
 
@@ -243,6 +247,12 @@ Alternatively, if you wish to do it more manually, here are the steps
 4. Listen to the voice description of detected objects
 
 Note: if you followed the manual instructions, you will want to run the flask detector.py before you run the main.py file.
+
+### Troubleshooting
+
+Based on your Raspberry Pi, you may need to allocate additional space for the temporary directory (especially if using the penv approach), as well as a larger swap file size. Otherwise, the pre-requisites may fail to install.
+
+Furthermore, refer to the requirements.txt file, it contains additional instructions if specific packages fail to install.
 
 
 
