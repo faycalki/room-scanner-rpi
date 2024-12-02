@@ -6,7 +6,7 @@ pycocotools==2.0.7
 PyYAML==6.0.1
 scipy==1.13.0
 onnxslim==0.1.31
-onnxruntime-gpu==1.18.0
+#onnxruntime-gpu==1.18.0 # May cause issues if enabled
 gradio==4.31.5
 opencv-python==4.9.0.80
 psutil==5.9.8
@@ -23,5 +23,11 @@ flask~=3.1.0
 werkzeug~=3.1.3
 pandas~=2.2.3
 tqdm~=4.67.1
-picamera>=1.13
+#picamera~=.1.13 # You may be required to run the following if your system is not detected as a raspberry pi: export READTHEDOCS=True and pip install picamera
+picamera2~=.0.3.23 # Alternative to the previous package. You'll need to install libcap-dev if you haven't, using apt or dnf depending on distro
 RPi.GPIO>=0.7.1
+gtts>=2.5.4
+opencv-python-headless>=4.10.0.84
+playsound~=1.3.0 # you might have to run pip install --upgrade wheel and pip install wheel first
+#pygobject~=3.48.1 # Optional, more efficient sound playing. Used by playsound.
+ultralytics~=8.3.39
