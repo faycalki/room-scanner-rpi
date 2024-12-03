@@ -12,14 +12,17 @@ This project transforms a Raspberry Pi into an intelligent room scanning device 
 
 ## Features
 
+
 - **Real-Time Detection**: Instant object detection using YOLOv10 optimized for Raspberry Pi
 - **Voice Feedback**: Automatic verbal description of detected objects
+  - Relative position of objects to device!
 - **Hardware Integration**: 
   - Push-button activation for on-demand scanning
   - LED status indicators
   - Integrated audio output
 - **Portable Design**: Self-contained system powered by Raspberry Pi
 - **Multi-language Support**: Inherits support for 243 languages from the parent project
+- No internet connection required for operational purposes!
 
 ## Hardware Requirements
 
