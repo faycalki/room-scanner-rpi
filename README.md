@@ -254,5 +254,10 @@ Based on your Raspberry Pi, you may need to allocate additional space for the te
 
 Furthermore, refer to the requirements.txt file, it contains additional instructions if specific packages fail to install.
 
+For the GPIO, if using 
 
-
+sudo groupadd gpio
+sudo usermod -a -G gpio user_name
+sudo grep gpio /etc/group
+sudo chown root.gpio /dev/gpiomem
+sudo chmod g+rw /dev/gpiomem
