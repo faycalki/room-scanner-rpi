@@ -57,6 +57,21 @@ Open-source ultralytics package: [YOLOv10 GitHub Repository](https://github.com/
  
 Wang, Ao, Chen, Hui, Liu, Lihao, Chen, Kai, Lin, Zijia, Han, Jungong, & Ding, Guiguang. (2024). *YOLOv10: Real-Time End-to-End Object Detection*. arXiv preprint arXiv:2405.14458.
 
+## Directory Structure
+```
+Project/
+├── LICENSE/
+│   └── LICENSE           # Licensing information
+├── README.md             # Project information
+├── src/                  # Source code directory
+│   ├── audio.py          # Audio processing logic
+│   ├── detector.py       # Backend server for Computer Vision processing
+│   ├── gpio_handler_no_debounce.py  # GPIO handling for RPis
+│   ├── main.py           # Main entry point for the application
+│── └── utils.py          # Utility functions and helpers -- obsolete
+
+```
+
 ## Installation
 Python 3.9 is required.
 
