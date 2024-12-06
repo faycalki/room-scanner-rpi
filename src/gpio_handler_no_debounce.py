@@ -43,7 +43,7 @@ class GPIOHandler:
 # Example usage
 if __name__ == "__main__":
     try:
-        gpio = GPIOHandler(button_pin=17)  # Replace 17 with your pin number
+        gpio = GPIOHandler(button_pin=17)  # PIN slot to read from
 
         print("Press the button (Ctrl+C to exit)...")
         while True:
