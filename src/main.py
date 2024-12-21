@@ -5,6 +5,7 @@ import requests
 import os
 from audio import synthesize_audio
 from gpio_handler_no_debounce import GPIOHandler  # Import the GPIOHandler class
+import time
 
 def calculate_position(bbox, image_width, image_height):
     """
@@ -41,7 +42,7 @@ def process_image(filename, language):
     try:
         with open(filename, 'rb') as file:
             image_bytes = file.read()
-            files = {'file': ('current.png', image_bytes, 'image/jpeg')}
+            files = {'file': ('current.png', image_bytes, 'image/png')}
 
             # Send request for detections
             response = requests.post(
@@ -67,7 +68,7 @@ def process_image(filename, language):
                     else:
                         detections_hashmap[object_name] = [position]
 
-                # Construct professional-sounding output
+                # Construct string
                 output_string = "Summary of inferences: "
                 for key, positions in detections_hashmap.items():
                     count = len(positions)
@@ -92,6 +93,18 @@ def process_image(filename, language):
         print(f"An unexpected error occurred: {e}")
 
 def main(language="en"):
+    url = "http://127.0.0.1:5000/"
+    while True:
+        try:
+            break # No ned for this
+            response=requests.get(url)
+            if response.status_code == 200:
+                print("Flask app ready, continuing execution")
+                break
+        except requests.exceptions.ConnectionError:
+              print("Waiting for app to be ready")
+        time.sleep(1)
+
     gpio = GPIOHandler(button_pin=17)  # Initialize GPIOHandler
 
     print("Press the button to take a picture (Ctrl+C to exit)...")
@@ -100,11 +113,14 @@ def main(language="en"):
             if gpio.is_button_pressed():
                 gpio.take_picture()  # Take a picture when the button is pressed
                 process_image(os.path.join(gpio.upload_directory, 'current.png'), language)  # Process the image
-                time.sleep(1)  # Debounce delay to prevent multiple captures
+                time.sleep(2)  # Debounce delay to prevent multiple captures
+                #gpio.cleanup()
+                #gpio = GPIOHandler(button_pin=17) # TODO: find a better workaround
 
     except KeyboardInterrupt:
         print("\nExiting...")
     finally:
+        #pass
         gpio.cleanup()  # Clean up GPIO and camera on exit
 
 if __name__ == "__main__":
