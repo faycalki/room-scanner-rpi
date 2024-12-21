@@ -22,10 +22,12 @@ from deep_translator import GoogleTranslator
 from flask import Flask, request, jsonify, send_file
 from werkzeug.utils import secure_filename
 from datetime import datetime, timedelta
+#import sys
+#sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 from ultralytics import YOLOv10
 
 app = Flask(__name__)
-
+#app.run(debug=False)
 # Dictionary to keep track of file creation times
 file_creation_times = {}
 
